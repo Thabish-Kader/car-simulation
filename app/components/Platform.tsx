@@ -179,25 +179,41 @@ const Walls = ({ length = -5 }) => {
 	return (
 		<>
 			<RigidBody type="fixed" restitution={0.2} friction={0}>
-				<mesh
+				{/* <mesh
 					position={[2.15, 0.75, -length * 2 + -1.8]}
 					geometry={boxGeometry}
 					material={wallMaterial}
 					scale={[0.3, 1.5, 4 * length]}
 					castShadow
-				/>
+				/> */}
 				<mesh
+					position={[2.3, 0.4, -length * 2 + -1.8]}
+					rotation-z={-Math.PI / 4}
+					geometry={boxGeometry}
+					material={wallMaterial}
+					scale={[0.3, 5, 4 * length]}
+					castShadow
+				/>
+				{/* <mesh
 					position={[-2.15, 0.75, -(length * 2) + -1.8]}
 					geometry={boxGeometry}
 					material={wallMaterial}
 					scale={[0.3, 1.5, 4 * length]}
 					castShadow
-				/>
+				/> */}
 				<mesh
-					position={[-0.1, 0.8, -2]}
+					position={[-2.3, 0.4, -length * 2 + -1.8]}
+					rotation-z={Math.PI / 4}
 					geometry={boxGeometry}
 					material={wallMaterial}
-					scale={[4, 1.5, 0.3]}
+					scale={[0.3, 5, 4 * length]}
+					castShadow
+				/>
+				<mesh
+					position={[0, 0.8, -1]}
+					geometry={boxGeometry}
+					material={wallMaterial}
+					scale={[8, 3, 0.3]}
 					castShadow
 				/>
 				<CuboidCollider

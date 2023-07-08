@@ -229,12 +229,12 @@ export const CarCanvas = () => {
 					near: 0.1,
 					far: 200,
 					position: [
-						0.13574356207445812, 1.131755811943111,
-						19.00945681985991,
+						1.1835837571711172, 0.8697202947607484,
+						18.986876052085485,
 					],
 				}}
 			>
-				<OrbitControls />
+				{/* <OrbitControls /> */}
 				<Environment preset="city" />
 				<Physics debug={false}>
 					<CarModel

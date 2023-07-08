@@ -3,6 +3,7 @@ import { RigidBody } from "@react-three/rapier";
 import { FC, useRef, useState } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
+import { CuboidCollider } from "@react-three/rapier";
 
 // instantiated in the top for optimization
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -83,25 +84,26 @@ const Platform2: FC<PlatformProps> = ({ position = [0, 0, 0] }) => {
 
 const Platform3: FC<PlatformProps> = ({ position = [0, 0, 0] }) => {
 	const obstacleRef = useRef() as any;
-	// randomize speed of rotation and direction
 	const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
 
 	useFrame((state) => {
 		const time = state.clock.getElapsedTime();
+
 		const y = Math.sin(time + timeOffset) + 1.15;
 		obstacleRef.current.setNextKinematicTranslation({
-			x: 0,
-			y: y,
-			z: 0,
+			x: position[0],
+			y: position[1] + y,
+			z: position[2],
 		});
 	});
+
 	return (
 		<group position={position}>
 			<mesh
 				geometry={boxGeometry}
 				material={platform2Material}
-				scale={[4, 0.2, 4]}
 				position={[0, -0.1, 0]}
+				scale={[4, 0.2, 4]}
 				receiveShadow
 			/>
 			<RigidBody
@@ -179,6 +181,42 @@ const PlatformEnd: FC<PlatformProps> = ({ position = [0, 0, 0] }) => {
 	);
 };
 
+const Walls = ({ length = -5 }) => {
+	return (
+		<>
+			<RigidBody type="fixed" restitution={0.2} friction={0}>
+				<mesh
+					position={[2.15, 0.75, -length * 2 + -1.8]}
+					geometry={boxGeometry}
+					material={wallMaterial}
+					scale={[0.3, 1.5, 4 * length]}
+					castShadow
+				/>
+				<mesh
+					position={[-2.15, 0.75, -(length * 2) + -1.8]}
+					geometry={boxGeometry}
+					material={wallMaterial}
+					scale={[0.3, 1.5, 4 * length]}
+					castShadow
+				/>
+				<mesh
+					position={[-0.1, 0.8, -2]}
+					geometry={boxGeometry}
+					material={wallMaterial}
+					scale={[4, 1.5, 0.3]}
+					castShadow
+				/>
+				<CuboidCollider
+					args={[2, 0.2, -(length * 3) + -1.8]}
+					position={[0, -0.17, 5]}
+					restitution={0.2}
+					friction={1}
+				/>
+			</RigidBody>
+		</>
+	);
+};
+
 export const Platform = () => {
 	return (
 		<>
@@ -187,6 +225,8 @@ export const Platform = () => {
 			<Platform3 position={[0, 0, 8]} />
 			<Platform4 position={[0, 0, 4]} />
 			<PlatformEnd position={[0, 0, 0]} />
+
+			<Walls />
 		</>
 	);
 };

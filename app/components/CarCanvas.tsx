@@ -4,6 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import { FC } from "react";
 import * as Three from "three";
 import { Platform } from "./Platform";
+import { Physics } from "@react-three/rapier";
 type CarModelProps = {};
 
 const CarModel: FC<CarModelProps> = (props) => {
@@ -124,8 +125,10 @@ export const CarCanvas = () => {
 		<Canvas>
 			<OrbitControls />
 			<Environment preset="city" />
-			<CarModel position-y={0} rotation-y={-Math.PI / 2} />
-			<Platform position={[0, 0, 0]} />
+			<Physics>
+				{/* <CarModel position-y={0} rotation-y={-Math.PI / 2} /> */}
+				<Platform />
+			</Physics>
 		</Canvas>
 	);
 };

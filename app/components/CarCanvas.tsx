@@ -1,8 +1,12 @@
 "use client";
 import { Environment, OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { FC } from "react";
+import * as Three from "three";
+import { Platform } from "./Platform";
+type CarModelProps = {};
 
-const CarModel = (props) => {
+const CarModel: FC<CarModelProps> = (props) => {
 	const { nodes, materials } = useGLTF("/Car.glb") as any;
 
 	return (
@@ -118,10 +122,10 @@ const CarModel = (props) => {
 export const CarCanvas = () => {
 	return (
 		<Canvas>
-			<CarModel />
 			<OrbitControls />
-
 			<Environment preset="city" />
+			<CarModel position-y={0} rotation-y={-Math.PI / 2} />
+			<Platform position={[0, 0, 0]} />
 		</Canvas>
 	);
 };

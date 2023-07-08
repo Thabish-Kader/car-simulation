@@ -6,11 +6,11 @@ import {
 	useKeyboardControls,
 } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { FC, useRef } from "react";
+import { FC, useEffect, useRef } from "react";
 import { KeyboardControls } from "@react-three/drei";
 import { Platform } from "./Platform";
 import { Physics, RigidBody } from "@react-three/rapier";
-
+import * as THREE from "three";
 type CarModelProps = {
 	scale: number;
 };
@@ -18,7 +18,20 @@ type CarModelProps = {
 const CarModel: FC<CarModelProps> = (props) => {
 	const { nodes, materials } = useGLTF("/Car.glb") as any;
 	const carBodyRef = useRef(null) as any;
+	const rightTire = useRef<THREE.Group>(null!);
+	const leftTire = useRef<THREE.Group>(null) as any;
 	const [subscribeKeys, getKeys] = useKeyboardControls();
+
+	useEffect(() => {
+		subscribeKeys(
+			(state) => state.nitro,
+			(value) => {
+				if (value) {
+					carBodyRef.current.applyImpulse({ x: 0, y: 0, z: -10 });
+				}
+			}
+		);
+	});
 
 	useFrame((state, delta) => {
 		const { forward, back, left, right } = getKeys();
@@ -53,18 +66,32 @@ const CarModel: FC<CarModelProps> = (props) => {
 				impulse.z = 0;
 			}
 		}
-		carBodyRef.current.applyImpulse(impulse);
-		carBodyRef.current.applyTorqueImpulse(torque);
+
+		// tire movements
+		if (right && !left) {
+			rightTire.current.rotation.z = 0.5;
+			leftTire.current.rotation.z = 0.5;
+		} else if (!right && !left) {
+			rightTire.current.rotation.z = 0;
+			leftTire.current.rotation.z = 0;
+		} else if (left && !right) {
+			rightTire.current.rotation.z = -0.5;
+			leftTire.current.rotation.z = -0.5;
+		}
+		carBodyRef?.current.applyImpulse(impulse);
+		carBodyRef?.current.applyTorqueImpulse(torque);
 	});
 
 	return (
 		// TODO: May have to change colliders shape to optimize
 		<RigidBody
 			ref={carBodyRef}
-			canSleep={false}
 			colliders="hull"
+			canSleep={false}
 			friction={1}
-			restitution={0.4}
+			restitution={0.5}
+			linearDamping={0.5}
+			angularDamping={0.5}
 		>
 			<group {...props} dispose={null}>
 				<group
@@ -103,8 +130,9 @@ const CarModel: FC<CarModelProps> = (props) => {
 						material={materials.CarBumperMaterial}
 					/>
 				</group>
-
+				{/* right tire */}
 				<group
+					ref={rightTire}
 					position={[-1.281, 0.235, -1.236]}
 					rotation={[Math.PI / 2, 0, 0]}
 					scale={[0.163, 0.07, 0.163]}
@@ -140,7 +168,9 @@ const CarModel: FC<CarModelProps> = (props) => {
 						material={materials.CarTyreMaterial}
 					/>
 				</group>
+				{/* left tire */}
 				<group
+					ref={leftTire}
 					position={[-1.278, 0.235, 0.626]}
 					rotation={[Math.PI / 2, 0, 0]}
 					scale={[0.163, 0.07, 0.163]}
@@ -189,6 +219,7 @@ export const CarCanvas = () => {
 				{ name: "back", keys: ["ArrowDown", "KeyS"] },
 				{ name: "left", keys: ["ArrowLeft", "KeyA"] },
 				{ name: "right", keys: ["ArrowRight", "KeyD"] },
+				{ name: "nitro", keys: ["Space"] },
 			]}
 		>
 			<Canvas
@@ -198,14 +229,14 @@ export const CarCanvas = () => {
 					near: 0.1,
 					far: 200,
 					position: [
-						3.520412193565621, 3.0406603027452204,
-						29.855758283418634,
+						0.13574356207445812, 1.131755811943111,
+						19.00945681985991,
 					],
 				}}
 			>
 				<OrbitControls />
 				<Environment preset="city" />
-				<Physics debug={true}>
+				<Physics debug={false}>
 					<CarModel
 						position-y={1}
 						position-z={16}

@@ -12,15 +12,15 @@ const platform1Material = new THREE.MeshStandardMaterial({
 	color: "limegreen",
 });
 const platform2Material = new THREE.MeshStandardMaterial({
-	color: "greenyellow",
+	color: "red",
 });
 
 const obstacleMaterial = new THREE.MeshStandardMaterial({
-	color: "orangered",
+	color: "purple",
 });
 
 const wallMaterial = new THREE.MeshStandardMaterial({
-	color: "slategrey",
+	color: "gray",
 });
 
 type PlatformProps = {
@@ -44,14 +44,11 @@ const Platform1: FC<PlatformProps> = ({ position = [0, 0, 0] }) => {
 const Platform2: FC<PlatformProps> = ({ position = [0, 0, 0] }) => {
 	const obstacleRef = useRef() as any;
 	// randomize speed of rotation and direction
-	const [speed] = useState(
-		() => Math.random() + 0.2 * (Math.random() > 0.5 ? -1 : 1)
-	);
 
 	useFrame((state) => {
 		const time = state.clock.getElapsedTime();
 		const rotation = new THREE.Quaternion();
-		rotation.setFromEuler(new THREE.Euler(0, time * speed, 0));
+		rotation.setFromEuler(new THREE.Euler(0, time, 0));
 		obstacleRef.current.setNextKinematicRotation(rotation);
 	});
 	return (
@@ -109,17 +106,14 @@ const Platform3: FC<PlatformProps> = ({ position = [0, 0, 0] }) => {
 			<RigidBody
 				ref={obstacleRef}
 				type="kinematicPosition"
+				colliders="ball"
 				position={[0, 0.3, 0]}
 				restitution={0.2}
 				friction={0}
 			>
-				<mesh
-					geometry={boxGeometry}
-					material={obstacleMaterial}
-					scale={[3.5, 0.3, 0.3]}
-					castShadow
-					receiveShadow
-				/>
+				<mesh material={obstacleMaterial}>
+					<sphereGeometry />
+				</mesh>
 			</RigidBody>
 		</group>
 	);
@@ -174,7 +168,7 @@ const PlatformEnd: FC<PlatformProps> = ({ position = [0, 0, 0] }) => {
 				geometry={boxGeometry}
 				material={platform1Material}
 				scale={[4, 0.2, 4]}
-				position={[0, 0, 0]}
+				position={[0, -0.1, 0]}
 				receiveShadow
 			/>
 		</group>
